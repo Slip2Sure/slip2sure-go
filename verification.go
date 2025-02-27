@@ -45,11 +45,13 @@ func (cfg *Slip2SureAPI) ScanTruemoneySlip(image []byte) (*model.Slip2SureTruemo
 	payload := &bytes.Buffer{}
 	writer := multipart.NewWriter(payload)
 	// Create form file
-	part, err := writer.CreateFormFile("file[]", fmt.Sprintf("%s.%s", filename.String(), extension))
+	part, err := writer.CreateFormFile("image", fmt.Sprintf("%s%s", filename.String(), extension))
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create form file: %v", err)
 	}
-	part.Write(image)
+	if _, err := part.Write(image); err != nil {
+		return nil, err
+	}
 	// Close writer
 	if err := writer.Close(); err != nil {
 		return nil, fmt.Errorf("Failed to close writer: %v", err)
@@ -69,7 +71,7 @@ func (cfg *Slip2SureAPI) ScanTruemoneySlip(image []byte) (*model.Slip2SureTruemo
 		return nil, fmt.Errorf("Failed to request API: %w", err)
 	}
 
-	if statusCode > 400 {
+	if statusCode >= 400 {
 		return nil, handleError(body)
 	}
 
@@ -82,7 +84,7 @@ func (cfg *Slip2SureAPI) ScanTruemoneySlip(image []byte) (*model.Slip2SureTruemo
 	return &resp, nil
 }
 
-func (cfg *Slip2SureAPI) ScanBankSlipByPayload(payload string) (*model.Slip2SureTruemoney, error) {
+func (cfg *Slip2SureAPI) ScanBankSlipByPayload(payload string) (*model.Slip2SureBankSlip, error) {
 	// Create payload
 	_payload := map[string]string{"payload": payload}
 	// Create JSON value
@@ -105,12 +107,12 @@ func (cfg *Slip2SureAPI) ScanBankSlipByPayload(payload string) (*model.Slip2Sure
 		return nil, fmt.Errorf("Failed to request API: %w", err)
 	}
 
-	if statusCode > 400 {
+	if statusCode >= 400 {
 		return nil, handleError(body)
 	}
 
 	// Parse JSON
-	var resp model.Slip2SureTruemoney
+	var resp model.Slip2SureBankSlip
 	if err := json.Unmarshal(body.Bytes(), &resp); err != nil {
 		return nil, fmt.Errorf("Parse JSON failed: %v", err)
 	}

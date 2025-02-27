@@ -10,7 +10,7 @@ type Slip2SureTruemoney struct {
 type Slip2SureTruemoneyInfo struct {
 	TransactionID     string    `json:"transaction_id"`
 	PaidAt            time.Time `json:"paid_at"`
-	Amount            string    `json:"amount"`
+	Amount            float32   `json:"amount"`
 	AccountFromMobile *string   `json:"account_from_mobile"`
 	AccountToMobile   string    `json:"account_to_mobile"`
 }

@@ -4,7 +4,7 @@ import "time"
 
 type Slip2SureBankSlip struct {
 	Slip2SureBase
-	Info Slip2SureTruemoneyInfo `json:"info"`
+	Info Slip2SureBankSlipInfo `json:"info"`
 }
 
 type Slip2SureBankSlipInfo struct {
